@@ -65,7 +65,19 @@ def updateNetwork():
     return resp
 
         
+@app.route("/fetchHosts" , methods = ["GET"])
+def fetchHosts():
+    jsonres=[]
+    results = Network.query.all()
+    print("PRAJITH")
     
+    for network in results:
+        jsonres.append({"email":network.email,"hosturl":network.hosturl})
+        print(network.email)
+        print(network.hosturl)
+    print(jsonres)
+    return jsonify(jsonres)
+
 
 @app.route("/")
 def index():
