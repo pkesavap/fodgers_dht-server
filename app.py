@@ -22,7 +22,7 @@ class Network(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(50),  nullable=False)
     hosturl = db.Column(db.String(300), nullable=False)
-
+    
 @app.route("/registerNetwork", methods=["POST"])
 def registerNetwork():
     db.init_app(app)
@@ -72,11 +72,28 @@ def fetchHosts():
     print("PRAJITH")
     
     for network in results:
-        jsonres.append({"email":network.email,"hosturl":network.hosturl})
-        print(network.email)
-        print(network.hosturl)
+        if isOnline(network.hosturl):
+            jsonres.append({"email":network.email,"hosturl":network.hosturl})
+            print(network.email)
+            print(network.hosturl)
     print(jsonres)
     return jsonify(jsonres)
+
+def isOnline(node):
+    print(node)
+    try:
+        resp = requests.get(node+'isOnline', timeout=1)
+    except requests.exceptions.ConnectionError:
+        print("Connection refused")    
+        return False
+    if resp.ok == False:
+        return False
+    data = resp.json()
+    if data[0]['host'] == 'online':
+        return True
+    else:
+        return False
+
 
 
 @app.route("/")
